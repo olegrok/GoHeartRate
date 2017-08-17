@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	//"github.com/olegrok/GoHeartRate/webcam"
-	"github.com/olegrok/GoHeartRate/pull"
+	"github.com/olegrok/GoHeartRate/pool"
 	"time"
 )
 
 type WorkerWithData struct {
 	data []int
-	ch chan<-pull.Worker
+	ch chan<- pool.Worker
 }
 
 type WorkerWithHttp struct {
@@ -36,7 +36,7 @@ func (w WorkerWithHttp) Work() {
 func main()  {
 	const n = 3
 	//webcam.Start()
-	ch := pull.CreatePull(n)
+	ch := pool.CreatePull(n)
 
 	tw := WorkerWithData{[]int{1, 2, 3}, ch}
 

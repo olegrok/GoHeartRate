@@ -1,4 +1,4 @@
-package pull
+package pool
 
 type Worker interface {
 	Work()
