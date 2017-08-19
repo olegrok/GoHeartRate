@@ -14,7 +14,7 @@ func Registration(w http.ResponseWriter, data protocol.AuthData) {
 	}
 }
 
-func IsLoginNew(login string) (bool) {
+func IsLoginNew(login string) bool {
 	// todo Check in DataBase
 	return true
 }

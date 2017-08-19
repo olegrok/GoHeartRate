@@ -1,18 +1,18 @@
 package auth
 
 import (
-	"net/http"
-	"github.com/olegrok/GoHeartRate/protocol"
 	"github.com/olegrok/GoHeartRate/client/requests"
+	"github.com/olegrok/GoHeartRate/protocol"
 	"log"
+	"net/http"
 )
 
 func Registration(client *http.Client, login string, password string) (*http.Response, error) {
 	msg := protocol.TransmittedMessage{
-		MessageType: "registration",
+		MessageType:     "registration",
 		MessageTypeCode: protocol.Register,
-		Data: protocol.AuthData {
-			Login: login,
+		Data: protocol.AuthData{
+			Login:    login,
 			Password: password,
 		},
 	}

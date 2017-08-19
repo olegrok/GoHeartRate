@@ -1,9 +1,9 @@
 package auth
 
 import (
-	"net/http"
-	"github.com/olegrok/GoHeartRate/protocol"
 	"fmt"
+	"github.com/olegrok/GoHeartRate/protocol"
+	"net/http"
 )
 
 func Authorization(w http.ResponseWriter, data protocol.AuthData) {
@@ -11,11 +11,11 @@ func Authorization(w http.ResponseWriter, data protocol.AuthData) {
 
 	ok, cookieValue := isRightPassword(data.Login, data.Password)
 	if ok {
-		cookie := http.Cookie {
-			Name: "access_key",
-			Value: cookieValue,
-			MaxAge: 86400,
-			Secure: true,
+		cookie := http.Cookie{
+			Name:     "access_key",
+			Value:    cookieValue,
+			MaxAge:   86400,
+			Secure:   true,
 			HttpOnly: true,
 		}
 		http.SetCookie(w, &cookie)
@@ -27,7 +27,7 @@ func Authorization(w http.ResponseWriter, data protocol.AuthData) {
 
 }
 
-func IsAuthorized(w http.ResponseWriter, r *http.Request, data protocol.AuthData) (bool) {
+func IsAuthorized(w http.ResponseWriter, r *http.Request, data protocol.AuthData) bool {
 	//todo Check in Database
 	return true
 }

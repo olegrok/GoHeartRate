@@ -1,11 +1,11 @@
 package main
 
 import (
-	"net/http"
-	"log"
-	"time"
 	"fmt"
 	"github.com/olegrok/GoHeartRate/client/auth"
+	"log"
+	"net/http"
+	"time"
 )
 
 func main() {

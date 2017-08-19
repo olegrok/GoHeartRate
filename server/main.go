@@ -1,20 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"github.com/olegrok/GoHeartRate/protocol"
-	"net/http"
 	"encoding/json"
-	"io/ioutil"
+	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/olegrok/GoHeartRate/protocol"
 	"github.com/olegrok/GoHeartRate/server/auth"
-	"time"
 	"github.com/olegrok/GoHeartRate/server/workers"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"time"
 )
 
 const requestWaitInQueueTimeout = time.Second * 15
 const kernels = 8
+
 var wp = workers.NewPool(kernels)
 
 func main() {
@@ -22,9 +23,9 @@ func main() {
 	wp.Run()
 	router := mux.NewRouter()
 	router.HandleFunc("/", handler)
-	s := &http.Server {
-		Addr: protocol.Addr,
-		Handler: router,
+	s := &http.Server{
+		Addr:           protocol.Addr,
+		Handler:        router,
 		ReadTimeout:    5 * time.Second,
 		WriteTimeout:   15 * time.Second,
 		MaxHeaderBytes: 1 << 20,

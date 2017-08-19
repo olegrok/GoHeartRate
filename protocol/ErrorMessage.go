@@ -1,11 +1,11 @@
 package protocol
 
 import (
+	"encoding/json"
+	"errors"
+	"io"
 	"io/ioutil"
 	"log"
-	"encoding/json"
-	"io"
-	"errors"
 )
 
 const (
@@ -13,19 +13,18 @@ const (
 	WrongPassword
 	CalculationError
 	JobTimedOut
-
 )
 
 var (
 	ErrAlreadyRegistered = errors.New("user has already registered")
-	ErrWrongPassword = errors.New("wrong login or password")
-	ErrCalculationError = errors.New("calculation server error")
-	ErrJobTimedOut = errors.New("request time out")
+	ErrWrongPassword     = errors.New("wrong login or password")
+	ErrCalculationError  = errors.New("calculation server error")
+	ErrJobTimedOut       = errors.New("request time out")
 )
 
 type ErrorData struct {
-	Error     error			`json:"error"`
-	ErrorCode int			`json:"message_code"`
+	Error     error `json:"error"`
+	ErrorCode int   `json:"message_code"`
 }
 
 func BytesToErrorData(body io.ReadCloser) ErrorData {
@@ -42,7 +41,7 @@ func BytesToErrorData(body io.ReadCloser) ErrorData {
 }
 
 func ErrorDataToBytes(err error, errCode int) []byte {
-	errorMsg := ErrorData {
+	errorMsg := ErrorData{
 		Error:     err,
 		ErrorCode: errCode,
 	}

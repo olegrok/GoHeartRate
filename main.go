@@ -9,7 +9,7 @@ import (
 
 type WorkerWithData struct {
 	data []int
-	ch chan<- pool.Worker
+	ch   chan<- pool.Worker
 }
 
 type WorkerWithHttp struct {
@@ -21,27 +21,26 @@ type WorkerWithHttp struct {
 	WorkerWithDatabase
 	...
 	...
- */
+*/
 
 func (w WorkerWithData) Work() {
 	fmt.Println(w.data)
-	w.ch<- WorkerWithHttp{[]string{"Processing finished"}}
+	w.ch <- WorkerWithHttp{[]string{"Processing finished"}}
 }
 
 func (w WorkerWithHttp) Work() {
 	fmt.Println(w.message)
 }
 
-
-func main()  {
+func main() {
 	const n = 3
 	//webcam.Start()
 	ch := pool.CreatePull(n)
 
 	tw := WorkerWithData{[]int{1, 2, 3}, ch}
 
-	ch<- tw
-	ch<- WorkerWithHttp{[]string{"First", "Second"}}
+	ch <- tw
+	ch <- WorkerWithHttp{[]string{"First", "Second"}}
 
 	/* todo correct completion of the program */
 	time.Sleep(3000)

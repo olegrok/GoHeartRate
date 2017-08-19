@@ -1,11 +1,11 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
+	"github.com/olegrok/GoHeartRate/protocol"
 	"log"
 	"net/http"
-	"errors"
-	"github.com/olegrok/GoHeartRate/protocol"
 )
 
 func StartLogin(client *http.Client) (*http.Response, error) {
@@ -66,8 +66,6 @@ func StartLogin(client *http.Client) (*http.Response, error) {
 				break
 			}
 			return res, err
-
-
 
 		default:
 			fmt.Println("Error! Try again!")

@@ -9,13 +9,13 @@ const (
 )
 
 type TransmittedMessage struct {
-	MessageType string		`json:"type"`
-	MessageTypeCode int		`json:"type_code"`
-	Data interface{}		`json:"data"`
+	MessageType     string      `json:"type"`
+	MessageTypeCode int         `json:"type_code"`
+	Data            interface{} `json:"data"`
 }
 
 type ReceivedMessage struct {
-	MessageType string		`json:"type"`
-	MessageTypeCode int		`json:"type_code"`
-	Data json.RawMessage	`json:"data"`
+	MessageType     string          `json:"type"`
+	MessageTypeCode int             `json:"type_code"`
+	Data            json.RawMessage `json:"data"`
 }
