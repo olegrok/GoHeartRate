@@ -2,11 +2,9 @@ package main
 
 import (
 	"fmt"
-	//"encoding/json"
 	"log"
 	"github.com/olegrok/GoHeartRate/protocol"
 	"net/http"
-	"time"
 	"encoding/json"
 	"io/ioutil"
 	"github.com/gorilla/mux"
@@ -16,11 +14,11 @@ import (
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe("localhost:8080", router))
+	log.Fatal(http.ListenAndServe(protocol.Addr, router))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(time.Now(), ": Connect! ", r)
+	fmt.Println("Connect! ", *r)
 	var rMsg protocol.ReceivedMessage
 	bytes, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
@@ -39,7 +37,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		auth.Authorization(w, r, msg)
-
+	case "registration":
+		var msg protocol.AuthData
+		if err := json.Unmarshal(rMsg.Data, &msg); err != nil {
+			log.Fatalf("marshal message error: %s", err)
+			break
+		}
+		auth.Registration(w, r, msg)
 	default:
 		fmt.Println("unknown message type")
 	}
