@@ -3,13 +3,10 @@ package auth
 import (
 	"net/http"
 	"github.com/olegrok/GoHeartRate/protocol"
-	//"time"
 	"fmt"
-	"encoding/json"
-	"log"
 )
 
-func Authorization(w http.ResponseWriter, r *http.Request, data protocol.AuthData){
+func Authorization(w http.ResponseWriter, data protocol.AuthData) {
 	fmt.Printf("Authorization:\n login: %s, password: %s\n", data.Login, data.Password)
 
 	ok, cookieValue := isRightPassword(data.Login, data.Password)
@@ -20,22 +17,12 @@ func Authorization(w http.ResponseWriter, r *http.Request, data protocol.AuthDat
 			MaxAge: 86400,
 			Secure: true,
 			HttpOnly: true,
-			//Raw: "access_key="+cookieValue,
-			//[]string{"test=tcookie"},
 		}
 		http.SetCookie(w, &cookie)
 		w.WriteHeader(http.StatusOK)
 	} else {
-		errorMsg := protocol.ErrorData{
-			Message: "Login is not found or password is wrong",
-			MessageCode:protocol.WrongPassword,
-		}
-		data, err := json.Marshal(errorMsg)
-		if err != nil {
-			log.Fatalf("marshaling error: %s", err)
-		}
 		w.WriteHeader(http.StatusNotAcceptable)
-		w.Write([]byte(data))
+		w.Write(protocol.ErrorDataToBytes(protocol.ErrWrongPassword, protocol.WrongPassword))
 	}
 
 }
