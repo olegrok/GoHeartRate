@@ -1,9 +1,10 @@
 package workers
 
 import (
-	"github.com/olegrok/GoHeartRate/protocol"
 	"sync"
 	"time"
+
+	"github.com/olegrok/GoHeartRate/protocol"
 )
 
 type Func func() interface{}
@@ -61,7 +62,7 @@ func (p *Pool) AddTaskSyncTimed(f Func, timeout time.Duration) (interface{}, err
 	case p.tasksChan <- &t:
 		break
 	case <-time.After(timeout):
-		return nil, protocol.ErrCalculationError
+		return nil, protocol.ErrCalculation
 	}
 	t.wg.Wait()
 	return t.result, nil

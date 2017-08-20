@@ -1,8 +1,9 @@
 package auth
 
 import (
-	"github.com/olegrok/GoHeartRate/protocol"
 	"net/http"
+
+	"github.com/olegrok/GoHeartRate/protocol"
 )
 
 func Registration(w http.ResponseWriter, data protocol.AuthData) {

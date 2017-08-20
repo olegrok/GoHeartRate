@@ -3,34 +3,42 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/olegrok/GoHeartRate/protocol"
-	"github.com/olegrok/GoHeartRate/server/auth"
-	"github.com/olegrok/GoHeartRate/server/workers"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/mux"
+	"github.com/olegrok/GoHeartRate/protocol"
+	"github.com/olegrok/GoHeartRate/server/auth"
+	"github.com/olegrok/GoHeartRate/server/config"
+	"github.com/olegrok/GoHeartRate/server/workers"
 )
 
-const requestWaitInQueueTimeout = time.Second * 15
-const kernels = 8
-
-var wp = workers.NewPool(kernels)
+var wp *workers.Pool
+var requestWaitInQueueTimeout time.Duration
 
 func main() {
+	log.Fatalln(runServer())
+}
+
+func runServer() error {
+	conf := config.LoadConfig("../config.json")
+	fmt.Println(conf)
+	wp = workers.NewPool(conf.Options.Concurrency)
+	requestWaitInQueueTimeout = conf.Options.RequestWaitInQueueTimeout * time.Second
 
 	wp.Run()
 	router := mux.NewRouter()
 	router.HandleFunc("/", handler)
 	s := &http.Server{
-		Addr:           protocol.Addr,
+		Addr:           conf.Address,
 		Handler:        router,
-		ReadTimeout:    5 * time.Second,
+		ReadTimeout:    15 * time.Second,
 		WriteTimeout:   15 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	log.Fatal(s.ListenAndServe())
+	return s.ListenAndServe()
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {

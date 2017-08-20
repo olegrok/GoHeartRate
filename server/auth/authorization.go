@@ -2,8 +2,9 @@ package auth
 
 import (
 	"fmt"
-	"github.com/olegrok/GoHeartRate/protocol"
 	"net/http"
+
+	"github.com/olegrok/GoHeartRate/protocol"
 )
 
 func Authorization(w http.ResponseWriter, data protocol.AuthData) {
