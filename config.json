@@ -1,0 +1,15 @@
+{
+  "database": {
+    "dbname": "heartrate",
+    "host": "localhost",
+    "login": "admin",
+    "password": "admin"
+  },
+  "address": "localhost:8080",
+  "options": {
+    "readTimeout": 15,
+    "writeTimeout": 15,
+    "requestWaitInQueueTimeout": 15,
+    "concurrency": 8
+  }
+}

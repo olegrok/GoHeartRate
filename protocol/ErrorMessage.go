@@ -2,7 +2,7 @@ package protocol
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -16,15 +16,15 @@ const (
 )
 
 var (
-	ErrAlreadyRegistered = errors.New("user has already registered")
-	ErrWrongPassword     = errors.New("wrong login or password")
-	ErrCalculationError  = errors.New("calculation server error")
-	ErrJobTimedOut       = errors.New("request time out")
+	ErrAlreadyRegistered = "user has already registered"
+	ErrWrongPassword     = "wrong login or password"
+	ErrCalculation       = "calculation server error"
+	ErrJobTimedOut       = "request time out"
 )
 
 type ErrorData struct {
-	Error     error `json:"error"`
-	ErrorCode int   `json:"message_code"`
+	Error     string `json:"error"`
+	ErrorCode int    `json:"error_code"`
 }
 
 func BytesToErrorData(body io.ReadCloser) ErrorData {
@@ -34,20 +34,21 @@ func BytesToErrorData(body io.ReadCloser) ErrorData {
 		log.Fatalf("read request body error: %s", err)
 	}
 	var errorMsg ErrorData
+	fmt.Printf("%s\n", bytes)
 	if err := json.Unmarshal(bytes, &errorMsg); err != nil {
-		log.Fatalf("marshal message error: %s", err)
+		log.Fatalf("unmarshal message error: %s", err)
 	}
 	return errorMsg
 }
 
-func ErrorDataToBytes(err error, errCode int) []byte {
-	errorMsg := ErrorData{
-		Error:     err,
+func ErrorDataToBytes(er string, errCode int) []byte {
+	data, err := json.Marshal(ErrorData{
+		Error:     er,
 		ErrorCode: errCode,
-	}
-	data, err := json.Marshal(errorMsg)
+	})
+	fmt.Printf("%s %s\n", data, er)
 	if err != nil {
 		log.Fatalf("marshaling error: %s", err)
 	}
-	return []byte(data)
+	return data
 }

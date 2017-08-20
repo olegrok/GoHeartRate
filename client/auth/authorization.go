@@ -1,10 +1,11 @@
 package auth
 
 import (
-	"github.com/olegrok/GoHeartRate/client/requests"
-	"github.com/olegrok/GoHeartRate/protocol"
 	"log"
 	"net/http"
+
+	"github.com/olegrok/GoHeartRate/client/requests"
+	"github.com/olegrok/GoHeartRate/protocol"
 )
 
 func Authorization(client *http.Client, login string, password string) (*http.Response, error) {

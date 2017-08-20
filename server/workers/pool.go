@@ -4,6 +4,7 @@ import (
 	"sync"
 	"time"
 
+	"errors"
 	"github.com/olegrok/GoHeartRate/protocol"
 )
 
@@ -62,7 +63,7 @@ func (p *Pool) AddTaskSyncTimed(f Func, timeout time.Duration) (interface{}, err
 	case p.tasksChan <- &t:
 		break
 	case <-time.After(timeout):
-		return nil, protocol.ErrCalculation
+		return nil, errors.New(protocol.ErrJobTimedOut)
 	}
 	t.wg.Wait()
 	return t.result, nil

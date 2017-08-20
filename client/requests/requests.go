@@ -3,9 +3,10 @@ package requests
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/olegrok/GoHeartRate/protocol"
 	"log"
 	"net/http"
+
+	"github.com/olegrok/GoHeartRate/protocol"
 )
 
 func CreateRequest(msg protocol.TransmittedMessage) (*http.Request, error) {

@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/olegrok/GoHeartRate/client/auth"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/olegrok/GoHeartRate/client/auth"
 )
 
 func main() {
@@ -16,8 +17,10 @@ func main() {
 	}
 	client := &http.Client{Transport: tr}
 
-	//response, err := auth.StartLogin(client)
-	response, err := auth.Authorization(client, "oleg", "oleg")
+	//auth.Registration(client, "oleg3", "pass")
+
+	response, err := auth.StartLogin(client)
+	//response, err := auth.Authorization(client, "oleg", "oleg")
 	if err != nil {
 		log.Printf("authorization error: %s", err)
 		return

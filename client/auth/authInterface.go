@@ -3,9 +3,12 @@ package auth
 import (
 	"errors"
 	"fmt"
-	"github.com/olegrok/GoHeartRate/protocol"
 	"log"
 	"net/http"
+
+	"bytes"
+	"github.com/howeyc/gopass"
+	"github.com/olegrok/GoHeartRate/protocol"
 )
 
 func StartLogin(client *http.Client) (*http.Response, error) {
@@ -23,15 +26,19 @@ func StartLogin(client *http.Client) (*http.Response, error) {
 			}
 
 			fmt.Print("Enter password: ")
-			if _, err := fmt.Scanln(&password); err != nil {
-				log.Printf("login error: %s", err)
+			passByte, err := gopass.GetPasswd()
+			if err != nil {
+				log.Fatalf("login error: %s", err)
 			}
+			password = string(passByte)
 
 			for rePassword := ""; rePassword != password; {
 				fmt.Print("Repeat password: ")
-				if _, err := fmt.Scanln(&rePassword); err != nil {
-					log.Printf("login error: %s", err)
+				passByte, err := gopass.GetPasswd()
+				if err != nil {
+					log.Fatalf("login error: %s", err)
 				}
+				rePassword = string(passByte)
 			}
 
 			res, err := Registration(client, login, password)
@@ -52,9 +59,11 @@ func StartLogin(client *http.Client) (*http.Response, error) {
 			}
 
 			fmt.Print("Enter password: ")
-			if _, err := fmt.Scanln(&password); err != nil {
-				log.Printf("login error: %s", err)
+			passByte, err := gopass.GetPasswd()
+			if err != nil {
+				log.Fatalf("login error: %s", err)
 			}
+			password = string(passByte)
 
 			res, err := Authorization(client, login, password)
 			if err != nil {
@@ -65,7 +74,6 @@ func StartLogin(client *http.Client) (*http.Response, error) {
 				fmt.Printf("Response ststus code = %d\n", res.StatusCode)
 				break
 			}
-			return res, err
 
 		default:
 			fmt.Println("Error! Try again!")

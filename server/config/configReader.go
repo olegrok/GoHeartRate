@@ -9,12 +9,12 @@ import (
 
 type Config struct {
 	Database struct {
+		DBname   string `json:"dbname"`
 		Host     string `json:"host"`
 		Login    string `json:"login"`
 		Password string `json:"password"`
 	}
 	Address string `json:"address"`
-	//Port    string `json:"port"`
 	Options struct {
 		ReadTimeout               time.Duration `json:"readTimeout"`
 		WriteTimeout              time.Duration `json:"writeTimeout"`
@@ -23,17 +23,19 @@ type Config struct {
 	}
 }
 
+var Cfg Config
+
 func LoadConfig(path string) Config {
-	var config Config
 	file, err := os.Open(path)
 	defer file.Close()
 	if err != nil {
 		log.Fatalf("error in configuration file %s: %s", path, err)
 	}
 	jsonParser := json.NewDecoder(file)
-	err = jsonParser.Decode(&config)
+	err = jsonParser.Decode(&Cfg)
 	if err != nil {
 		log.Fatalf("error in configuration file %s: %s", path, err)
 	}
-	return config
+
+	return Cfg
 }

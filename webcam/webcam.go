@@ -2,9 +2,10 @@ package webcam
 
 import (
 	"fmt"
-	"github.com/lazywei/go-opencv/opencv"
 	"os"
 	"path"
+
+	"github.com/lazywei/go-opencv/opencv"
 )
 
 func Start() {

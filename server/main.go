@@ -12,6 +12,7 @@ import (
 	"github.com/olegrok/GoHeartRate/protocol"
 	"github.com/olegrok/GoHeartRate/server/auth"
 	"github.com/olegrok/GoHeartRate/server/config"
+	"github.com/olegrok/GoHeartRate/server/database"
 	"github.com/olegrok/GoHeartRate/server/workers"
 )
 
@@ -24,18 +25,18 @@ func main() {
 
 func runServer() error {
 	conf := config.LoadConfig("../config.json")
-	fmt.Println(conf)
+	defer database.Connect().Close()
 	wp = workers.NewPool(conf.Options.Concurrency)
 	requestWaitInQueueTimeout = conf.Options.RequestWaitInQueueTimeout * time.Second
-
 	wp.Run()
+
 	router := mux.NewRouter()
 	router.HandleFunc("/", handler)
 	s := &http.Server{
 		Addr:           conf.Address,
 		Handler:        router,
-		ReadTimeout:    15 * time.Second,
-		WriteTimeout:   15 * time.Second,
+		ReadTimeout:    conf.Options.ReadTimeout * time.Second,
+		WriteTimeout:   conf.Options.WriteTimeout * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 	return s.ListenAndServe()

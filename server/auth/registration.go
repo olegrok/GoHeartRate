@@ -1,14 +1,21 @@
 package auth
 
 import (
-	"net/http"
-
 	"github.com/olegrok/GoHeartRate/protocol"
+	"github.com/olegrok/GoHeartRate/server/database"
+	"net/http"
+	"time"
 )
 
 func Registration(w http.ResponseWriter, data protocol.AuthData) {
 	if IsLoginNew(data.Login) {
+		database.DB.Create(&database.User{
+			Username:  data.Login,
+			Password:  data.Password,
+			CreatedAt: time.Now(),
+		})
 		w.WriteHeader(http.StatusOK)
+
 	} else {
 		w.WriteHeader(http.StatusNotAcceptable)
 		w.Write(protocol.ErrorDataToBytes(protocol.ErrAlreadyRegistered, protocol.AlreadyRegistered))
@@ -16,6 +23,5 @@ func Registration(w http.ResponseWriter, data protocol.AuthData) {
 }
 
 func IsLoginNew(login string) bool {
-	// todo Check in DataBase
-	return true
+	return database.DB.Where("username = ?", login).First(&database.User{}).RecordNotFound()
 }

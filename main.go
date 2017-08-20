@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	//"github.com/olegrok/GoHeartRate/webcam"
-	"github.com/olegrok/GoHeartRate/pool"
 	"time"
+
+	"github.com/olegrok/GoHeartRate/pool"
 )
 
 type WorkerWithData struct {
