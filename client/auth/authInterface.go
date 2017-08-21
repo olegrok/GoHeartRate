@@ -3,23 +3,24 @@ package auth
 import (
 	"errors"
 	"fmt"
-	"log"
-	"net/http"
-
-	"bytes"
 	"github.com/howeyc/gopass"
 	"github.com/olegrok/GoHeartRate/protocol"
+	"log"
+	"net/http"
+	"strings"
 )
 
 func StartLogin(client *http.Client) (*http.Response, error) {
 	var login, password string
 	for {
-		fmt.Printf("Are you already registred? [yes/no]\n")
+		fmt.Printf("Are you already registred? [y/n]\n")
 		var s string
 		var errorMsg protocol.ErrorData
 		fmt.Scanln(&s)
-		switch s {
+		switch strings.ToLower(s) {
 		case "no":
+			fallthrough
+		case "n":
 			fmt.Print("Enter new login: ")
 			if _, err := fmt.Scanln(&login); err != nil {
 				log.Printf("login error: %s", err)
@@ -53,6 +54,8 @@ func StartLogin(client *http.Client) (*http.Response, error) {
 			fmt.Println("*************************\n*\tSUCCESS!\t*\n*************************")
 			fallthrough
 		case "yes":
+			fallthrough
+		case "y":
 			fmt.Print("Enter login: ")
 			if _, err := fmt.Scanln(&login); err != nil {
 				log.Printf("login error: %s", err)
@@ -74,6 +77,7 @@ func StartLogin(client *http.Client) (*http.Response, error) {
 				fmt.Printf("Response ststus code = %d\n", res.StatusCode)
 				break
 			}
+			return res, err
 
 		default:
 			fmt.Println("Error! Try again!")

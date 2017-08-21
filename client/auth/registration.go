@@ -23,11 +23,6 @@ func Registration(client *http.Client, login string, password string) (*http.Res
 		log.Fatalf("response error: %s", err)
 		return nil, err
 	}
-	response, err := client.Do(request)
-	if err != nil {
-		log.Fatalf("response error: %s", err)
-		return nil, err
-	}
 
-	return response, nil
+	return client.Do(request)
 }

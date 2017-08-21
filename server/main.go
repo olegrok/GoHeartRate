@@ -13,7 +13,9 @@ import (
 	"github.com/olegrok/GoHeartRate/server/auth"
 	"github.com/olegrok/GoHeartRate/server/config"
 	"github.com/olegrok/GoHeartRate/server/database"
+	"github.com/olegrok/GoHeartRate/server/math"
 	"github.com/olegrok/GoHeartRate/server/workers"
+	"io"
 )
 
 var wp *workers.Pool
@@ -43,7 +45,7 @@ func runServer() error {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Connect! ", *r)
+	fmt.Println("Connect!", *r)
 
 	_, err := wp.AddTaskSyncTimed(func() interface{} {
 		var rMsg protocol.ReceivedMessage
@@ -72,8 +74,25 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			auth.Registration(w, msg)
+		case "math":
+			var msg protocol.MathData
+			if err := json.Unmarshal(rMsg.Data, &msg); err != nil {
+				log.Fatalf("marshal message error: %s", err)
+				break
+			}
+
+			if database.IsAuthorizedUser(r.Cookies()) {
+				for _, c := range r.Cookies() {
+					http.SetCookie(w, c)
+				}
+				w.WriteHeader(http.StatusAccepted)
+				io.WriteString(w, fmt.Sprint(math.Calculate(3, msg.DataArray)))
+			} else {
+				w.WriteHeader(http.StatusUnauthorized)
+			}
+
 		default:
-			w.WriteHeader(http.StatusNotImplemented)
+			w.WriteHeader(http.StatusAccepted)
 			fmt.Println("unknown message type")
 		}
 		return nil

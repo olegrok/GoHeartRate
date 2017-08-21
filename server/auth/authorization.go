@@ -15,28 +15,23 @@ func Authorization(w http.ResponseWriter, data protocol.AuthData) {
 	ok, session := isRightPassword(data.Login, data.Password)
 	fmt.Println(ok, session)
 	if ok {
-		go func() {
-			database.DB.Create(&session)
-		}()
-		cookie := http.Cookie{
-			Name:     "token",
-			Value:    session.Token,
-			MaxAge:   86400,
-			Secure:   true,
-			HttpOnly: true,
-		}
-		http.SetCookie(w, &cookie)
+		//go func() {
+		database.DB.Create(&session)
+		//}()
+		http.SetCookie(w, &http.Cookie{
+			Name:  "token",
+			Value: session.Token,
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:  "uid",
+			Value: fmt.Sprint(session.UserID),
+		})
 		w.WriteHeader(http.StatusOK)
 	} else {
 		w.WriteHeader(http.StatusNotAcceptable)
 		w.Write(protocol.ErrorDataToBytes(protocol.ErrWrongPassword, protocol.WrongPassword))
 	}
 
-}
-
-func IsAuthorized(w http.ResponseWriter, r *http.Request, data protocol.AuthData) bool {
-	//todo Check in Database
-	return true
 }
 
 func isRightPassword(login string, password string) (bool, *database.UserSession) {

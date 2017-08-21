@@ -1,6 +1,6 @@
 package protocol
 
 type MathData struct {
-	DataArray []int `json:"data_array"`
-	TimeArray []int `json:"time_array"`
+	DataArray []float64 `json:"data_array"`
+	TimeArray []float64 `json:"time_array"`
 }
