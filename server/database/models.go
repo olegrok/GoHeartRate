@@ -9,6 +9,7 @@ type User struct {
 	ID        uint   `gorm:"primary_key; AUTO_INCREMENT"`
 	Username  string `gorm:"not null;unique;size:64"`
 	Password  string `gorm:"not null"`
+	Salt      string `gorm:"not null"`
 	CreatedAt time.Time
 }
 
@@ -34,7 +35,7 @@ func (user *UserSession) BeforeCreate(scope *gorm.Scope) error {
 type UserResult struct {
 	ID        uint64 `gorm:"primary_key; AUTO_INCREMENT"`
 	User      User   `gorm:"ForeignKey:UserID;AssociationForeignKey:ID"`
-	UserID    uint   `gorm:"not null"`
+	UserID    uint64 `gorm:"not null"`
 	Result    string `gorm:"not null"`
 	CreatedAt time.Time
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,7 +16,6 @@ import (
 	"github.com/olegrok/GoHeartRate/server/database"
 	"github.com/olegrok/GoHeartRate/server/math"
 	"github.com/olegrok/GoHeartRate/server/workers"
-	"io"
 )
 
 var wp *workers.Pool
@@ -82,11 +82,22 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if database.IsAuthorizedUser(r.Cookies()) {
+				result := math.Calculate(3, msg.DataArray)
+
 				for _, c := range r.Cookies() {
+					if c.Name == "uid" {
+						if err = database.SaveResult(c.Value, result); err != nil {
+							w.WriteHeader(http.StatusInternalServerError)
+							w.Write(protocol.ErrorDataToBytes(protocol.ErrDatabase, protocol.DatabaseError))
+							return nil
+						}
+					}
 					http.SetCookie(w, c)
 				}
+
 				w.WriteHeader(http.StatusAccepted)
-				io.WriteString(w, fmt.Sprint(math.Calculate(3, msg.DataArray)))
+				io.WriteString(w, fmt.Sprint(result))
+				database.GetResults("14")
 			} else {
 				w.WriteHeader(http.StatusUnauthorized)
 			}

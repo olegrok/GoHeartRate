@@ -21,7 +21,7 @@ const blequ = 21
 
 // Calculate : function to start all calculations
 func Calculate(n int, data []float64) float64 {
-	time.Sleep(10 * time.Second)
+	time.Sleep(1 * time.Second)
 	return 42
 
 	max := ftnCalc(n, filter(n, data))

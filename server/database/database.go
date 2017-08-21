@@ -18,6 +18,10 @@ func Connect() *gorm.DB {
 	if err != nil {
 		log.Fatalf("database error: %s", err)
 	}
+	db.LogMode(true)
+	db.AutoMigrate(User{})
+	db.AutoMigrate(UserSession{})
+	db.AutoMigrate(UserResult{})
 	DB = db
 	return DB
 }

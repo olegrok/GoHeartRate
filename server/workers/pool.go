@@ -25,7 +25,7 @@ type Pool struct {
 func NewPool(concurrency int) *Pool {
 	return &Pool{
 		concurrency: concurrency,
-		tasksChan:   make(chan *Task),
+		tasksChan:   make(chan *Task, concurrency),
 	}
 }
 

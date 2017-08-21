@@ -9,9 +9,11 @@ import (
 
 func Registration(w http.ResponseWriter, data protocol.AuthData) {
 	if IsLoginNew(data.Login) {
+		pass, salt := SaltPassword(data.Password)
 		database.DB.Create(&database.User{
 			Username:  data.Login,
-			Password:  data.Password,
+			Password:  pass,
+			Salt:      salt,
 			CreatedAt: time.Now(),
 		})
 		w.WriteHeader(http.StatusOK)
