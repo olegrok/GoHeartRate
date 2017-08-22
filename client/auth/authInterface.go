@@ -91,6 +91,10 @@ func StartLogin(client *http.Client) (*http.Response, error) {
 			fallthrough
 		case protocol.CalculationError:
 			fallthrough
+		case protocol.JobTimedOut:
+			fallthrough
+		case protocol.DatabaseError:
+			fallthrough
 		default:
 			fmt.Printf("Error code %d: %s\n", errorMsg.ErrorCode, errorMsg.Error)
 		}

@@ -60,21 +60,21 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		switch rMsg.MessageType {
-		case "auth":
+		case protocol.Auth:
 			var msg protocol.AuthData
 			if err := json.Unmarshal(rMsg.Data, &msg); err != nil {
 				log.Fatalf("marshal message error: %s", err)
 				break
 			}
 			auth.Authorization(w, msg)
-		case "registration":
+		case protocol.Register:
 			var msg protocol.AuthData
 			if err := json.Unmarshal(rMsg.Data, &msg); err != nil {
 				log.Fatalf("marshal message error: %s", err)
 				break
 			}
 			auth.Registration(w, msg)
-		case "math":
+		case protocol.Data:
 			var msg protocol.MathData
 			if err := json.Unmarshal(rMsg.Data, &msg); err != nil {
 				log.Fatalf("marshal message error: %s", err)

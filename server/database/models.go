@@ -20,7 +20,7 @@ func (user *User) BeforeCreate(scope *gorm.Scope) error {
 
 type UserSession struct {
 	ID        uint64 `gorm:"primary_key; AUTO_INCREMENT"`
-	User      User   `gorm:"ForeignKey:UserID;AssociationForeignKey:ID"`
+	User      User   `gorm:"ForeignKey:UserID"`
 	UserID    uint   `gorm:"not null"`
 	Token     string `gorm:"not null"`
 	CreatedAt time.Time
@@ -34,7 +34,7 @@ func (user *UserSession) BeforeCreate(scope *gorm.Scope) error {
 
 type UserResult struct {
 	ID        uint64 `gorm:"primary_key; AUTO_INCREMENT"`
-	User      User   `gorm:"ForeignKey:UserID;AssociationForeignKey:ID"`
+	User      User   `gorm:"ForeignKey:UserID"`
 	UserID    uint64 `gorm:"not null"`
 	Result    string `gorm:"not null"`
 	CreatedAt time.Time

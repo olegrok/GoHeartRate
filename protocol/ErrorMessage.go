@@ -13,6 +13,7 @@ const (
 	WrongPassword
 	CalculationError
 	JobTimedOut
+	DatabaseError
 )
 
 var (
@@ -20,6 +21,7 @@ var (
 	ErrWrongPassword     = "wrong login or password"
 	ErrCalculation       = "calculation server error"
 	ErrJobTimedOut       = "request time out"
+	ErrDatabase          = "database error"
 )
 
 type ErrorData struct {

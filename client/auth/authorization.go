@@ -10,8 +10,7 @@ import (
 
 func Authorization(client *http.Client, login string, password string) (*http.Response, error) {
 	msg := protocol.TransmittedMessage{
-		MessageType:     "auth",
-		MessageTypeCode: protocol.Auth,
+		MessageType:     protocol.Auth,
 		Data: protocol.AuthData{
 			Login:    login,
 			Password: password,

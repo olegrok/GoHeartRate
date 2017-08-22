@@ -15,9 +15,8 @@ func Transmit(client *http.Client, array []float64) (*http.Response, error) {
 	}
 
 	req, err := requests.CreateRequest(protocol.TransmittedMessage{
-		MessageType:     "math",
-		MessageTypeCode: protocol.Data,
-		Data:            dataMsg,
+		MessageType: protocol.Data,
+		Data:        dataMsg,
 	})
 
 	if err != nil {
