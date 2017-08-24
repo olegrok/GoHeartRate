@@ -72,7 +72,6 @@ func messageDistributor(rMsg protocol.ReceivedMessage, w http.ResponseWriter, r 
 		} else {
 			w.WriteHeader(http.StatusUnauthorized)
 		}
-
 	default:
 		w.WriteHeader(http.StatusNotAcceptable)
 		log.Printf("unknown message type: %s", rMsg.MessageType)

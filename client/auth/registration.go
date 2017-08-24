@@ -8,7 +8,7 @@ import (
 	"github.com/olegrok/GoHeartRate/protocol"
 )
 
-func Registration(client *http.Client, login string, password string) (*http.Response, error) {
+func registration(client *http.Client, login string, password string) (*http.Response, error) {
 	msg := protocol.TransmittedMessage{
 		MessageType: protocol.Register,
 		Data: protocol.AuthData{

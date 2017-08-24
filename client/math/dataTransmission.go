@@ -8,6 +8,7 @@ import (
 	"github.com/olegrok/GoHeartRate/protocol"
 )
 
+// Transmit sends measurements results to server
 func Transmit(client *http.Client, array []float64) (*http.Response, error) {
 	dataMsg := protocol.MathData{
 		DataArray: array,

@@ -8,7 +8,7 @@ import (
 	"github.com/olegrok/GoHeartRate/protocol"
 )
 
-func Authorization(client *http.Client, login string, password string) (*http.Response, error) {
+func authorization(client *http.Client, login string, password string) (*http.Response, error) {
 	msg := protocol.TransmittedMessage{
 		MessageType:     protocol.Auth,
 		Data: protocol.AuthData{

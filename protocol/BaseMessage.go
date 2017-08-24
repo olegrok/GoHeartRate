@@ -2,31 +2,35 @@ package protocol
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 )
 
-type MessageType int
+type messageType int
 
 const (
-	Auth MessageType = iota + 1
+	// Auth is a code that uses to sending with authorization messages
+	Auth messageType = iota + 1
+	// Register is a code that uses to sending with registration messages
 	Register
+	// Data is a code that uses to sending messages with results of measurements
 	Data
+	// Unknown is a special code for unknown messages
 	Unknown
 )
 
+// TransmittedMessage is a structure to send messages of different types and their code
 type TransmittedMessage struct {
-	MessageType MessageType `json:"type"`
+	MessageType messageType `json:"type"`
 	Data        interface{} `json:"data"`
 }
 
+// ReceivedMessage structure that contains data in raw to future marshaling
 type ReceivedMessage struct {
-	MessageType     MessageType     `json:"type"`
-	MessageTypeCode int             `json:"type_code"`
-	Data            json.RawMessage `json:"data"`
+	MessageType messageType     `json:"type"`
+	Data        json.RawMessage `json:"data"`
 }
 
-func (m *MessageType) UnmarshalJSON(b []byte) error {
+func (m *messageType) UnmarshalJSON(b []byte) error {
 	var s string
 	if err := json.Unmarshal(b, &s); err != nil {
 		return err
@@ -45,9 +49,9 @@ func (m *MessageType) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (a MessageType) MarshalJSON() ([]byte, error) {
+func (m messageType) MarshalJSON() ([]byte, error) {
 	var s string
-	switch a {
+	switch m {
 	default:
 		s = "unknown"
 	case Auth:
@@ -58,7 +62,5 @@ func (a MessageType) MarshalJSON() ([]byte, error) {
 		s = "math"
 	}
 
-	byte, _ := json.Marshal(s)
-	fmt.Printf("%s\n", byte)
 	return json.Marshal(s)
 }

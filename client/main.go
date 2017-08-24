@@ -29,13 +29,7 @@ func main() {
 		Jar:       jar,
 	}
 
-	//auth.Registration(client, "oleg3", "pass")
-
-	res, err := auth.StartLogin(client)
-	if err != nil {
-		log.Printf("authorization error: %s", err)
-		return
-	}
+	res := auth.StartLogin(client)
 	fmt.Println("Login status code:", res.StatusCode)
 	fmt.Println(*res, res.Cookies())
 
@@ -47,6 +41,5 @@ func main() {
 	bytes, err := ioutil.ReadAll(res.Body)
 	defer res.Body.Close()
 	fmt.Printf("%s\n", bytes)
-	//response, err := auth.Authorization(client, "oleg", "oleg")
 
 }
