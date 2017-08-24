@@ -2,11 +2,13 @@ package database
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 )
 
-func IsAuthorizedUser(cookies []*http.Cookie) bool {
+// IsAuthorizedUser checks the validity of user's cookie
+func IsAuthorizedUser(cookies []*http.Cookie) (*string, bool) {
 	fmt.Println(cookies)
 	var token, uid string
 	for _, c := range cookies {
@@ -19,21 +21,27 @@ func IsAuthorizedUser(cookies []*http.Cookie) bool {
 	}
 
 	fmt.Printf("used_id = %s; valid = %t\n", uid, !DB.Where("user_id = ? AND token = ?", uid, token).First(&UserSession{}).RecordNotFound())
-	return !DB.Where("user_id = ? AND token = ?", uid, token).First(&UserSession{}).RecordNotFound()
+	return &uid, !DB.Where("user_id = ? AND token = ?", uid, token).First(&UserSession{}).RecordNotFound()
 }
 
+// SaveResult saves user's result in database
 func SaveResult(id string, result float64) error {
 	uid, _ := strconv.ParseUint(id, 10, 64)
-	return DB.Create(&UserResult{
+	if err := DB.Create(&UserResult{
 		UserID: uid,
 		Result: fmt.Sprint(result),
-	}).Error
+	}).Error; err != nil {
+		log.Printf("result save error: %s", err)
+		return err
+	}
+	return nil
 }
 
+// GetResults gets 10 last results by userID
 func GetResults(id string) (*[]UserResult, error) {
 	var res []UserResult
 	var err error
-	if err = DB.Where("user_id = ?", id).Order("created_at desc").Find(&res).Limit(10).Error; err != nil {
+	if err = DB.Where("user_id = ?", id).Order("created_at desc").Limit(10).Find(&res).Error; err != nil {
 		return nil, err
 	}
 	for i, j := range res {

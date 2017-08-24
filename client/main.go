@@ -40,7 +40,7 @@ func main() {
 	fmt.Println(*res, res.Cookies())
 
 	res, err = math.Transmit(client, []float64{1, 2.71, 3.14})
-
+	res, err = math.Transmit(client, []float64{1, 2.71, 3.14})
 	fmt.Println("Transmit results status code:", res.StatusCode)
 	fmt.Println(*res, res.Cookies())
 

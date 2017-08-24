@@ -8,27 +8,30 @@ import (
 	"github.com/olegrok/GoHeartRate/protocol"
 )
 
-type Func func() interface{}
+type function func() interface{}
 
-type Task struct {
-	f      Func
+type task struct {
+	f      function
 	wg     sync.WaitGroup
 	result interface{}
 }
 
+// Pool is a pool of GoRoutines
 type Pool struct {
 	concurrency int
-	tasksChan   chan *Task
+	tasksChan   chan *task
 	wg          sync.WaitGroup
 }
 
+// NewPool is a function that creates new pool of GoRoutines with "concurrency" size
 func NewPool(concurrency int) *Pool {
 	return &Pool{
 		concurrency: concurrency,
-		tasksChan:   make(chan *Task, concurrency),
+		tasksChan:   make(chan *task, concurrency),
 	}
 }
 
+// Run starts pool of GoRoutines
 func (p *Pool) Run() {
 	for i := 0; i < p.concurrency; i++ {
 		p.wg.Add(1)
@@ -36,13 +39,15 @@ func (p *Pool) Run() {
 	}
 }
 
+// Stop closes channel of tasks and stops all GoRoutines of pool
 func (p *Pool) Stop() {
 	close(p.tasksChan)
 	p.wg.Wait()
 }
 
-func (p *Pool) AddTaskSync(f Func) interface{} {
-	t := Task{
+// AddTaskSync adds new task in pool's queue
+func (p *Pool) AddTaskSync(f function) interface{} {
+	t := task{
 		f:  f,
 		wg: sync.WaitGroup{},
 	}
@@ -52,8 +57,10 @@ func (p *Pool) AddTaskSync(f Func) interface{} {
 	return t.result
 }
 
-func (p *Pool) AddTaskSyncTimed(f Func, timeout time.Duration) (interface{}, error) {
-	t := Task{
+// AddTaskSyncTimed adds new task in pool's queue with timeout.
+// If the task is not taken from the queue during the timeout, then the function returns an error
+func (p *Pool) AddTaskSyncTimed(f function, timeout time.Duration) (interface{}, error) {
+	t := task{
 		f:  f,
 		wg: sync.WaitGroup{},
 	}

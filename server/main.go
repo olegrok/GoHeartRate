@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -22,90 +21,78 @@ var wp *workers.Pool
 var requestWaitInQueueTimeout time.Duration
 
 func main() {
+	defer database.DB.Close()
 	log.Fatalln(runServer())
 }
 
+func init() {
+	config.LoadConfig("../config.json")
+	database.Connect()
+}
+
 func runServer() error {
-	conf := config.LoadConfig("../config.json")
-	defer database.Connect().Close()
-	wp = workers.NewPool(conf.Options.Concurrency)
-	requestWaitInQueueTimeout = conf.Options.RequestWaitInQueueTimeout * time.Second
+	wp = workers.NewPool(config.Config.Options.Concurrency)
+	requestWaitInQueueTimeout = config.Config.Options.RequestWaitInQueueTimeout * time.Second
 	wp.Run()
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", handler)
 	s := &http.Server{
-		Addr:           conf.Address,
+		Addr:           config.Config.Address,
 		Handler:        router,
-		ReadTimeout:    conf.Options.ReadTimeout * time.Second,
-		WriteTimeout:   conf.Options.WriteTimeout * time.Second,
+		ReadTimeout:    config.Config.Options.ReadTimeout * time.Second,
+		WriteTimeout:   config.Config.Options.WriteTimeout * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 	return s.ListenAndServe()
 }
 
+func messageDistributor(rMsg protocol.ReceivedMessage, w http.ResponseWriter, r *http.Request) {
+	switch rMsg.MessageType {
+	case protocol.Auth:
+		if msg, err := auth.GetAuthMessage(rMsg.Data); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		} else {
+			auth.Authorization(w, *msg)
+		}
+	case protocol.Register:
+		if msg, err := auth.GetAuthMessage(rMsg.Data); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		} else {
+			auth.Registration(w, *msg)
+		}
+	case protocol.Data:
+		if uid, status := database.IsAuthorizedUser(r.Cookies()); status {
+			if err := math.ResultHandler(rMsg.Data, uid, w); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				break
+			}
+			w.WriteHeader(http.StatusOK)
+			database.GetResults(*uid)
+		} else {
+			w.WriteHeader(http.StatusUnauthorized)
+		}
+
+	default:
+		w.WriteHeader(http.StatusNotAcceptable)
+		log.Printf("unknown message type: %s", rMsg.MessageType)
+	}
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Connect!", *r)
-
 	_, err := wp.AddTaskSyncTimed(func() interface{} {
 		var rMsg protocol.ReceivedMessage
 		bytes, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("read request body error: %s", err)
+		}
 		defer r.Body.Close()
 
-		if err != nil {
-			log.Fatalf("read request body error: %s", err)
+		if err = json.Unmarshal(bytes, &rMsg); err != nil {
+			log.Printf("marshal message error: %s", err)
 		}
-		if err := json.Unmarshal(bytes, &rMsg); err != nil {
-			log.Fatalf("marshal message error: %s", err)
-		}
-
-		switch rMsg.MessageType {
-		case protocol.Auth:
-			var msg protocol.AuthData
-			if err := json.Unmarshal(rMsg.Data, &msg); err != nil {
-				log.Fatalf("marshal message error: %s", err)
-				break
-			}
-			auth.Authorization(w, msg)
-		case protocol.Register:
-			var msg protocol.AuthData
-			if err := json.Unmarshal(rMsg.Data, &msg); err != nil {
-				log.Fatalf("marshal message error: %s", err)
-				break
-			}
-			auth.Registration(w, msg)
-		case protocol.Data:
-			var msg protocol.MathData
-			if err := json.Unmarshal(rMsg.Data, &msg); err != nil {
-				log.Fatalf("marshal message error: %s", err)
-				break
-			}
-
-			if database.IsAuthorizedUser(r.Cookies()) {
-				result := math.Calculate(3, msg.DataArray)
-
-				for _, c := range r.Cookies() {
-					if c.Name == "uid" {
-						if err = database.SaveResult(c.Value, result); err != nil {
-							w.WriteHeader(http.StatusInternalServerError)
-							w.Write(protocol.ErrorDataToBytes(protocol.ErrDatabase, protocol.DatabaseError))
-							return nil
-						}
-					}
-					http.SetCookie(w, c)
-				}
-
-				w.WriteHeader(http.StatusAccepted)
-				io.WriteString(w, fmt.Sprint(result))
-				database.GetResults("14")
-			} else {
-				w.WriteHeader(http.StatusUnauthorized)
-			}
-
-		default:
-			w.WriteHeader(http.StatusAccepted)
-			fmt.Println("unknown message type")
-		}
+		messageDistributor(rMsg, w, r)
 		return nil
 	}, requestWaitInQueueTimeout)
 	if err != nil {

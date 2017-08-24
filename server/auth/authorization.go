@@ -9,17 +9,17 @@ import (
 	"github.com/olegrok/GoHeartRate/server/database"
 	"github.com/satori/go.uuid"
 	"io"
+	"log"
 )
 
+// Authorization send request to auth
 func Authorization(w http.ResponseWriter, data protocol.AuthData) {
 	fmt.Printf("Authorization:\n login: %s, password: %s\n", data.Login, data.Password)
 
 	ok, session := isRightPassword(data.Login, data.Password)
 	fmt.Println(ok, session)
 	if ok {
-		//go func() {
 		database.DB.Create(&session)
-		//}()
 		http.SetCookie(w, &http.Cookie{
 			Name:  "token",
 			Value: session.Token,
@@ -30,12 +30,16 @@ func Authorization(w http.ResponseWriter, data protocol.AuthData) {
 		})
 		w.WriteHeader(http.StatusOK)
 	} else {
+		if _, err := w.Write(protocol.ErrorDataToBytes(protocol.ErrWrongPassword, protocol.WrongPassword)); err != nil {
+			log.Printf("response writer error: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 		w.WriteHeader(http.StatusNotAcceptable)
-		w.Write(protocol.ErrorDataToBytes(protocol.ErrWrongPassword, protocol.WrongPassword))
 	}
 
 }
 
+//isRightPassword check login and password and returns boolean value and user session struct if user is valid
 func isRightPassword(login string, password string) (bool, *database.UserSession) {
 	var usr database.User
 
@@ -54,17 +58,21 @@ func isRightPassword(login string, password string) (bool, *database.UserSession
 	return false, nil
 }
 
+// SaltPassword returns password hash and salt
 func SaltPassword(password string) (string, string) {
 	h := md5.New()
 	salt := fmt.Sprint(uuid.NewV4())
-	io.WriteString(h, fmt.Sprintf("%s::%s", password, salt))
-	fmt.Printf("%s\n%x\n", salt, h.Sum(nil))
+	if _, err := io.WriteString(h, fmt.Sprintf("%s::%s", password, salt)); err != nil {
+		log.Printf("salt password error: %s", err)
+	}
 	return fmt.Sprintf("%x", h.Sum(nil)), salt
 }
 
+// IsValidPassword checks input hash with database value
 func IsValidPassword(inputPassword string, salt string, realPassword string) bool {
 	h := md5.New()
-	io.WriteString(h, fmt.Sprintf("%s::%s", inputPassword, salt))
-	fmt.Printf("%s\n%x\n%s\n", salt, h.Sum(nil), realPassword)
+	if _, err := io.WriteString(h, fmt.Sprintf("%s::%s", inputPassword, salt)); err != nil {
+		log.Printf("check password validity error: %s", err)
+	}
 	return realPassword == fmt.Sprintf("%x", h.Sum(nil))
 }
