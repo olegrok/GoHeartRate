@@ -22,5 +22,5 @@ func Connect() {
 	if err != nil {
 		log.Fatalf("database error: %s", err)
 	}
-	DB.LogMode(true)
+	//DB.LogMode(true)
 }

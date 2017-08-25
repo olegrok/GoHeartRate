@@ -14,6 +14,8 @@ const (
 	Register
 	// Data is a code that uses to sending messages with results of measurements
 	Data
+	// Results is a code to request last 10 results of measurements
+	Results
 	// Unknown is a special code for unknown messages
 	Unknown
 )
@@ -44,6 +46,8 @@ func (m *messageType) UnmarshalJSON(b []byte) error {
 		*m = Register
 	case "math":
 		*m = Data
+	case "results":
+		*m = Results
 	}
 
 	return nil
@@ -60,6 +64,8 @@ func (m messageType) MarshalJSON() ([]byte, error) {
 		s = "register"
 	case Data:
 		s = "math"
+	case Results:
+		s = "results"
 	}
 
 	return json.Marshal(s)

@@ -38,14 +38,11 @@ func SaveResult(id string, result float64) error {
 }
 
 // GetResults gets 10 last results by userID
-func GetResults(id string) (*[]UserResult, error) {
+func GetResults(id *string) (*[]UserResult, error) {
 	var res []UserResult
 	var err error
-	if err = DB.Where("user_id = ?", id).Order("created_at desc").Limit(10).Find(&res).Error; err != nil {
+	if err = DB.Where("user_id = ?", *id).Order("created_at desc").Limit(10).Find(&res).Error; err != nil {
 		return nil, err
-	}
-	for i, j := range res {
-		fmt.Println(i, j.CreatedAt, j.Result)
 	}
 	return &res, nil
 }

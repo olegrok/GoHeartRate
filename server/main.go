@@ -68,10 +68,28 @@ func messageDistributor(rMsg protocol.ReceivedMessage, w http.ResponseWriter, r 
 				break
 			}
 			w.WriteHeader(http.StatusOK)
-			database.GetResults(*uid)
+
 		} else {
 			w.WriteHeader(http.StatusUnauthorized)
 		}
+	case protocol.Results:
+		if uid, status := database.IsAuthorizedUser(r.Cookies()); status {
+			if res, err := database.GetResults(uid); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				break
+			} else {
+				data, err := json.Marshal(res)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					break
+				}
+				w.Write(data)
+				w.WriteHeader(http.StatusOK)
+			}
+		} else {
+			w.WriteHeader(http.StatusUnauthorized)
+		}
+
 	default:
 		w.WriteHeader(http.StatusNotAcceptable)
 		log.Printf("unknown message type: %s", rMsg.MessageType)
