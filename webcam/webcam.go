@@ -110,7 +110,7 @@ func Detectface(img *opencv.IplImage, cascade *opencv.HaarCascade) *opencv.IplIm
 }
 
 func Start() ([]float64, []float64) {
-	const n int = 512
+	const n int = 128
 	var signal []float64
 	var sampleTime []float64
 	win := opencv.NewWindow("Go-OpenCV Webcam Face Detection")
@@ -164,5 +164,6 @@ func Start() ([]float64, []float64) {
 		}
 	}
 	fmt.Println(signal)
+	fmt.Println(sampleTime)
 	return signal, sampleTime
 }
