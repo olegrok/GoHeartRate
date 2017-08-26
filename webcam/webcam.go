@@ -128,7 +128,7 @@ func Start() ([10]uint32, [10]float64) {
 		panic(err)
 	}
 
-	cascade := opencv.LoadHaarClassifierCascade(path.Join(cwd, "haarcascade_frontalface_alt.xml"))
+	cascade, err := opencv.LoadHaarClassifierCascade(path.Join(cwd, "haarcascade_frontalface_alt.xml"))
 
 	fmt.Println("Press ESC to quit")
 

@@ -1,4 +1,4 @@
-package main
+lpackage main
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"time"
-
+	"github.com/olegrok/GoHeartRate/webcam"
 	"encoding/json"
 	"github.com/olegrok/GoHeartRate/client/auth"
 	"github.com/olegrok/GoHeartRate/client/math"
@@ -34,7 +34,8 @@ func main() {
 
 	res := auth.StartLogin(client)
 	fmt.Println("Login status code:", res.StatusCode)
-
+	//signal, time_array := webcam.Start()
+  //if res, err = math.Transmit(client, singal, time_array); err != nil {
 	if res, err = math.Transmit(client, []float64{1, 2.71, 3.14}); err != nil {
 		log.Fatalf("result transmitting error: %s", err)
 	}
