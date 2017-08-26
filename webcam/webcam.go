@@ -107,10 +107,10 @@ func Detectface(img *opencv.IplImage, cascade *opencv.HaarCascade) *opencv.IplIm
 	return only_face
 }
 
-func Start() ([10]uint32, [10]float64) {
+func Start() ([]float64, []float64) {
 	const n int = 10
-	var signal [n]uint32
-	var sampleTime [n]float64
+	var signal []float64
+	var sampleTime []float64
 	win := opencv.NewWindow("Go-OpenCV Webcam Face Detection")
 	//winMask := opencv.NewWindow("Mask")
 	//winResult := opencv.NewWindow("Result")
@@ -128,7 +128,7 @@ func Start() ([10]uint32, [10]float64) {
 		panic(err)
 	}
 
-	cascade, err := opencv.LoadHaarClassifierCascade(path.Join(cwd, "haarcascade_frontalface_alt.xml"))
+	cascade := opencv.LoadHaarClassifierCascade(path.Join(cwd, "haarcascade_frontalface_alt.xml"))
 
 	fmt.Println("Press ESC to quit")
 
@@ -145,11 +145,9 @@ func Start() ([10]uint32, [10]float64) {
 
 				if only_face.Width() != 0 && only_face.Height() != 0 {
 					skinRegion := detectSkin(only_face)
-					signal[frame_num] = sum(skinRegion)
-					timeDelta := time.Since(startTime)
-					sampleTime[frame_num] = timeDelta.Seconds()
-					fmt.Println(reflect.TypeOf(timeDelta).Kind())
-					fmt.Println(timeDelta)
+					signal = append(signal, float64(sum(skinRegion)))
+					sampleTime = append(sampleTime, time.Since(startTime).Seconds())
+					//sampleTime[frame_num] = timeDelta.Seconds()
 					frame_num += 1
 				}
 
