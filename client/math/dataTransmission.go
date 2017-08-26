@@ -9,10 +9,11 @@ import (
 )
 
 // Transmit sends measurements results to server
-func Transmit(client *http.Client, array []float64, time_array []float64) (*http.Response, error) {
+func Transmit(client *http.Client, array []float64, timeArray []float64) (*http.Response, error) {
 	dataMsg := protocol.MathData{
 		DataArray: array,
-		TimeArray: time_array}
+		TimeArray: timeArray,
+	}
 
 	req, err := requests.CreateRequest(protocol.TransmittedMessage{
 		MessageType: protocol.Data,

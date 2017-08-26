@@ -7,9 +7,9 @@
   },
   "address": "localhost:8080",
   "options": {
-    "readTimeout": 15,
-    "writeTimeout": 15,
-    "requestWaitInQueueTimeout": 15,
+    "readTimeout": 90,
+    "writeTimeout": 90,
+    "requestWaitInQueueTimeout": 30,
     "concurrency": 8
   }
 }

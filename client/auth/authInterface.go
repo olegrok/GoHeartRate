@@ -43,7 +43,6 @@ func StartLogin(client *http.Client) *http.Response {
 		}
 		errorHandler(errorMsg)
 	}
-	return nil
 }
 
 func loginInterface(client *http.Client) *http.Response {

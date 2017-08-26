@@ -1,27 +1,23 @@
-//Package has only one external function named Calculate
+//Package math has only one external function named Calculate
 //this function takes two parametrs: array of raw data
 //and quantity of it. Returns calculated heart rate
 //func Calculate(int, []float64) float64
 package math
 
 import (
+	"fmt"
 	"github.com/mjibson/go-dsp/fft"
 	"math"
 	"math/cmplx"
 )
 
-type everything struct {
-	x []float64
-	y []float64
-	n int
-}
-
 const blequ = 21
 
 // Calculate : function to start all calculations
-func Calculate(n int, data []float64) float64 {
+func Calculate(data []float64) float64 {
+	n := len(data)
 	max := ftnCalc(n, filter(n, data))
-
+	fmt.Println("SCORE:", max, "\tLEN:", n)
 	return max * 60 * math.Pi / 2
 }
 

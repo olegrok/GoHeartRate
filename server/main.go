@@ -83,7 +83,9 @@ func messageDistributor(rMsg protocol.ReceivedMessage, w http.ResponseWriter, r 
 					w.WriteHeader(http.StatusInternalServerError)
 					break
 				}
-				w.Write(data)
+				if _, err := w.Write(data); err != nil {
+					log.Printf("%s", err)
+				}
 				w.WriteHeader(http.StatusOK)
 			}
 		} else {

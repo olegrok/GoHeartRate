@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// GetLastResults sends last 10 measurements to user
 func GetLastResults(client *http.Client) (*http.Response, error) {
 	req, err := CreateRequest(protocol.TransmittedMessage{
 		MessageType: protocol.Results,

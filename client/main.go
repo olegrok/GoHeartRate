@@ -18,7 +18,7 @@ import (
 func main() {
 	tr := &http.Transport{
 		MaxIdleConns:       10,
-		IdleConnTimeout:    30 * time.Second,
+		IdleConnTimeout:    90 * time.Second,
 		DisableCompression: true,
 	}
 
@@ -34,9 +34,8 @@ func main() {
 
 	res := auth.StartLogin(client)
 	fmt.Println("Login status code:", res.StatusCode)
-	signal, time_array := webcam.Start()
-	if res, err = math.Transmit(client, signal, time_array); err != nil {
-		//if res, err = math.Transmit(client, []float64{1, 2.71, 3.14}); err != nil {
+	signal, timeArray := webcam.Start()
+	if res, err = math.Transmit(client, signal, timeArray); err != nil {
 		log.Fatalf("result transmitting error: %s", err)
 	}
 	fmt.Println("Transmit results status code:", res.StatusCode)
@@ -56,7 +55,9 @@ func main() {
 	} else {
 		fmt.Println("YOUR LAST 10 RESULTS:")
 		var results []database.UserResult
-		json.Unmarshal(bytes, &results)
+		if err := json.Unmarshal(bytes, &results); err != nil {
+			log.Fatalf("unmarshal error: %s", err)
+		}
 		for _, result := range results {
 			fmt.Printf("%s: %s\n", result.CreatedAt.Format("02.01.2006 15:04"), result.Result)
 		}

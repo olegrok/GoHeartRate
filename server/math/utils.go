@@ -16,7 +16,7 @@ func ResultHandler(RawData json.RawMessage, uid *string, w io.Writer) error {
 		log.Printf("marshal message error: %s", err)
 		return err
 	}
-	result := Calculate(3, msg.DataArray)
+	result := Calculate(msg.DataArray)
 	if err := database.SaveResult(*uid, result); err != nil {
 		return err
 	}
