@@ -96,13 +96,13 @@ func detectSkin(face *opencv.IplImage) *opencv.IplImage {
 func Detectface(img *opencv.IplImage, cascade *opencv.HaarCascade) *opencv.IplImage {
 	faces := cascade.DetectObjects(img)
 
-	opencv.Circle(img,
-		opencv.Point{
-			faces[0].X() + (faces[0].Width() / 2),
-			faces[0].Y() + (faces[0].Height() / 2),
-		},
-		faces[0].Width()/2,
-		opencv.ScalarAll(255.0), 1, 1, 0)
+	//opencv.Circle(img,
+	//	opencv.Point{
+	//		faces[0].X() + (faces[0].Width() / 2),
+	//		faces[0].Y() + (faces[0].Height() / 2),
+	//	},
+	//	faces[0].Width()/2,
+	//	opencv.ScalarAll(255.0), 1, 1, 0)
 	only_face := opencv.Crop(img, faces[0].X(), faces[0].Y(), faces[0].Width(), faces[0].Height())
 	return only_face
 }
@@ -128,7 +128,7 @@ func Start() ([]float64, []float64) {
 		panic(err)
 	}
 
-	cascade := opencv.LoadHaarClassifierCascade(path.Join(cwd, "haarcascade_frontalface_alt.xml"))
+	cascade := opencv.LoadHaarClassifierCascade(path.Join(cwd, "../haarcascade_frontalface_alt.xml"))
 
 	fmt.Println("Press ESC to quit")
 

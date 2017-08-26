@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"errors"
 	"fmt"
 	"github.com/howeyc/gopass"
 	"github.com/olegrok/GoHeartRate/protocol"
@@ -74,15 +73,13 @@ func registrationInterface(client *http.Client, errorMsg *protocol.ErrorData) bo
 
 	fmt.Print("Enter password: ")
 	if passByte, err := gopass.GetPasswd(); err != nil || len(passByte) == 0 {
-		if len(passByte) == 0 && err == nil {
-			err = errors.New("password is too short")
-		}
 		log.Fatalf("login error: %s", err)
 	} else {
 		password = string(passByte)
-		fmt.Printf("%d %d\n", len(passByte), len(password))
 	}
-
+	if len(password) <= 1 {
+		log.Fatalf("login error: password is too short\n")
+	}
 	for rePassword := ""; rePassword != password; {
 		fmt.Print("Repeat password: ")
 		passByte, err := gopass.GetPasswd()

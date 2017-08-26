@@ -8,7 +8,6 @@ import (
 	"github.com/mjibson/go-dsp/fft"
 	"math"
 	"math/cmplx"
-	"time"
 )
 
 type everything struct {
@@ -21,9 +20,6 @@ const blequ = 21
 
 // Calculate : function to start all calculations
 func Calculate(n int, data []float64) float64 {
-	time.Sleep(1 * time.Second)
-	return 42
-
 	max := ftnCalc(n, filter(n, data))
 
 	return max * 60 * math.Pi / 2
